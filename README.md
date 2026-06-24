@@ -114,12 +114,30 @@ A line-by-line mapping to the target role is in [`docs/role-mapping.md`](docs/ro
 ## Status
 
 - [x] Repo + detection-as-code structure
-- [x] Custom parsers + unit tests
-- [x] Sigma detection rules + MITRE coverage matrix
-- [x] CI/CD pipeline
+- [x] Custom parsers + unit tests *(13/13 passing)*
+- [x] Sigma detection rules + MITRE coverage matrix *(validated by `sigma check`)*
+- [x] CI/CD pipeline *(green on GitHub Actions)*
 - [x] AI triage assistant (online + offline modes)
 - [x] IR runbooks
-- [ ] Live Wazuh stack screenshots *(run locally, drop into `assets/`)*
+- [x] Live Wazuh stack brought up via `docker compose` *(see Evidence)*
+- [ ] Dashboard PNGs *(GUI capture — see `assets/README.md`)*
+
+---
+
+## Evidence
+
+The stack runs locally end to end. To reproduce and capture proof:
+
+```bash
+cd docker
+cp .env.example .env && ./generate-certs.sh && docker compose up -d
+./capture-evidence.sh            # writes API/indexer evidence to ../assets/evidence/
+```
+
+`capture-evidence.sh` authenticates to the Wazuh API, confirms the custom rules are
+loaded, injects an SSH brute-force burst, and queries the indexer for the resulting
+alerts. For the dashboard PNGs, open **https://localhost:443** and capture the
+Security-events and MITRE ATT&CK views (`assets/README.md` lists the shots to grab).
 
 ---
 

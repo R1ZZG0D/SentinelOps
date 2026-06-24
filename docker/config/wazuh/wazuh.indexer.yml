@@ -1,8 +1,8 @@
 network.host: "0.0.0.0"
 node.name: "wazuh.indexer"
-cluster.initial_master_nodes:
-  - "wazuh.indexer"
 cluster.name: "sentinelops-cluster"
+# Single-node discovery: do NOT also set cluster.initial_master_nodes —
+# OpenSearch rejects the combination ("not allowed when discovery.type is single-node").
 discovery.type: single-node
 node.max_local_storage_nodes: "3"
 path.data: /var/lib/wazuh-indexer

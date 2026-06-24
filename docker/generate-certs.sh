@@ -9,7 +9,7 @@ mkdir -p config/certs
 
 echo "[*] Generating Wazuh certificates via the official wazuh-certs-generator image..."
 docker run --rm \
-  -v "$(pwd)/config/certs:/certs" \
+  -v "$(pwd)/config/certs:/certificates" \
   -v "$(pwd)/config/certs/config.yml:/config/certs.yml:ro" \
   wazuh/wazuh-certs-generator:0.0.2 || {
     cat <<'EOF'

@@ -42,8 +42,11 @@ services:
       - ./config/certs/root-ca.pem:/etc/ssl/root-ca.pem
       - ./config/certs/wazuh.manager.pem:/etc/ssl/filebeat.pem
       - ./config/certs/wazuh.manager-key.pem:/etc/ssl/filebeat.key
-      # Custom SentinelOps decoders/rules can be mounted here:
-      - ./config/wazuh/local_rules.xml:/var/ossec/etc/rules/local_rules.xml
+      # NOTE: custom rules are NOT bind-mounted here. A bind mount into
+      # /var/ossec/etc/* pre-creates the dir and makes Wazuh skip restoring the
+      # default ossec.conf into an empty volume (manager won't start). Instead,
+      # custom rules are *deployed* to the running manager via ./deploy-rules.sh
+      # — the same model the detection-as-code CI pipeline uses.
 
   wazuh.indexer:
     image: wazuh/wazuh-indexer:4.9.0
