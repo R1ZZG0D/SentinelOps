@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets / local env
+.env
+*.pem
+*.key
+docker/config/**/certs/
+docker/certs/
+
+# OS
+.DS_Store
+
+# Triage output
+triage-assistant/out/
+*.local.json
+
+# Editor
+.vscode/
+.idea/

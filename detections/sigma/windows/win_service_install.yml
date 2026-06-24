@@ -1,0 +1,30 @@
+title: New Windows Service Installed
+id: d2547706-da64-4675-b2a2-7a8409ee5668
+status: experimental
+description: >
+    Detects installation of a new Windows service (Event ID 7045). Adversaries
+    create services for execution and persistence; benign software also does, so
+    this is tuned as medium and is best correlated with the installing user and
+    recent logon context.
+references:
+    - https://attack.mitre.org/techniques/T1543/003/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.persistence
+    - attack.t1543.003
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        extra.event_id: 7045
+    condition: selection
+fields:
+    - extra.service_name
+    - user.name
+    - host.name
+falsepositives:
+    - Software installation and updates (EDR, management agents)
+    - Driver installation
+level: medium

@@ -1,0 +1,61 @@
+title: Outbound Connection to Uncommon C2 Port
+id: dfb958f3-9cb2-4c5a-97b2-7bfcd53e3efb
+name: zeek_uncommon_c2_port
+status: experimental
+description: Base event — an established outbound Zeek connection to a port commonly used by C2 frameworks.
+references:
+    - https://attack.mitre.org/techniques/T1571/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.command_and_control
+    - attack.t1571
+logsource:
+    product: zeek
+    service: conn
+detection:
+    selection:
+        log.source: 'zeek_conn'
+        extra.conn_state: 'SF'
+        destination.port:
+            - 4444
+            - 1337
+            - 8443
+            - 9001
+    condition: selection
+fields:
+    - source.ip
+    - destination.ip
+    - destination.port
+level: informational
+---
+title: Possible C2 Beaconing to Uncommon Port
+id: 947faebb-fb9f-457c-b58f-f377a6ec305a
+status: experimental
+description: >
+    Detects repeated established connections from one internal host to the same
+    external IP on an uncommon C2 port — the behavioral signature of beaconing.
+    Pair with the triage assistant for interval/jitter analysis before escalating.
+references:
+    - https://attack.mitre.org/techniques/T1071/
+    - https://attack.mitre.org/techniques/T1571/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.command_and_control
+    - attack.t1071
+    - attack.t1571
+correlation:
+    type: event_count
+    rules:
+        - zeek_uncommon_c2_port
+    group-by:
+        - source.ip
+        - destination.ip
+    timespan: 10m
+    condition:
+        gte: 3
+falsepositives:
+    - Internal applications legitimately using these ports
+    - Developer tooling / proxies
+level: high

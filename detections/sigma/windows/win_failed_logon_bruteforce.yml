@@ -1,0 +1,51 @@
+title: Windows Failed Logon
+id: 51de7600-9176-4b62-b893-570df67dde4e
+name: win_failed_logon
+status: experimental
+description: Base event — a single failed Windows logon (Event ID 4625).
+references:
+    - https://attack.mitre.org/techniques/T1110/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.credential_access
+    - attack.t1110
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        extra.event_id: 4625
+    condition: selection
+fields:
+    - source.ip
+    - user.name
+    - extra.logon_type
+falsepositives:
+    - Users with cached credentials after a password change
+    - Service accounts with stale passwords on scheduled tasks
+level: informational
+---
+title: Windows Account Brute Force (Multiple 4625 From One Source)
+id: 1a476bb2-8c8a-4d53-8bfb-a5d0f6790c0e
+status: experimental
+description: >
+    Detects 6+ failed Windows logons (Event ID 4625) from a single source
+    address within five minutes, indicating password brute force or spray.
+references:
+    - https://attack.mitre.org/techniques/T1110/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.credential_access
+    - attack.t1110
+correlation:
+    type: event_count
+    rules:
+        - win_failed_logon
+    group-by:
+        - source.ip
+    timespan: 5m
+    condition:
+        gte: 6
+level: high

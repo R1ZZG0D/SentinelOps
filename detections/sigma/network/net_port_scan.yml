@@ -1,0 +1,53 @@
+title: Zeek Half-Open Connection (No Response)
+id: dbdb4b25-b117-4951-aaf0-64056a89de59
+name: zeek_half_open_conn
+status: experimental
+description: Base event — a Zeek connection attempt that received no response (conn_state S0).
+references:
+    - https://attack.mitre.org/techniques/T1046/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.discovery
+    - attack.t1046
+logsource:
+    product: zeek
+    service: conn
+detection:
+    selection:
+        log.source: 'zeek_conn'
+        extra.conn_state: 'S0'
+    condition: selection
+fields:
+    - source.ip
+    - destination.ip
+    - destination.port
+level: informational
+---
+title: Horizontal Port Scan From Single Host
+id: 1c792d0f-49dd-4fa1-9531-a4c91e333c5c
+status: experimental
+description: >
+    Detects a single source contacting many distinct destination ports that
+    receive no response within one minute — a TCP port scan / reconnaissance sweep.
+references:
+    - https://attack.mitre.org/techniques/T1046/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.discovery
+    - attack.t1046
+correlation:
+    type: value_count
+    rules:
+        - zeek_half_open_conn
+    group-by:
+        - source.ip
+    timespan: 1m
+    condition:
+        gte: 6
+        field: destination.port
+falsepositives:
+    - Authorized vulnerability scanners and asset-discovery tools
+    - Load balancers / health checks hitting many ports
+level: medium

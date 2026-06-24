@@ -1,0 +1,102 @@
+# Single-node Wazuh stack for the SentinelOps lab.
+# Manager (rule engine) + Indexer (OpenSearch storage) + Dashboard (UI).
+# Based on the official Wazuh single-node deployment, trimmed for a home lab.
+#
+# Prereqs:  cp .env.example .env  &&  ./generate-certs.sh  &&  docker compose up -d
+# Dashboard: https://localhost:443
+name: sentinelops
+
+services:
+  wazuh.manager:
+    image: wazuh/wazuh-manager:4.9.0
+    hostname: wazuh.manager
+    restart: always
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 655360, hard: 655360 }
+    ports:
+      - "1514:1514"     # agent enrollment / event reporting
+      - "1515:1515"     # agent registration
+      - "514:514/udp"   # syslog ingest (Linux/network sources)
+      - "55000:55000"   # Wazuh REST API
+    environment:
+      - INDEXER_URL=https://wazuh.indexer:9200
+      - INDEXER_USERNAME=admin
+      - INDEXER_PASSWORD=${INDEXER_PASSWORD}
+      - FILEBEAT_SSL_VERIFICATION_MODE=full
+      - SSL_CERTIFICATE_AUTHORITIES=/etc/ssl/root-ca.pem
+      - SSL_CERTIFICATE=/etc/ssl/filebeat.pem
+      - SSL_KEY=/etc/ssl/filebeat.key
+    volumes:
+      - wazuh_api_configuration:/var/ossec/api/configuration
+      - wazuh_etc:/var/ossec/etc
+      - wazuh_logs:/var/ossec/logs
+      - wazuh_queue:/var/ossec/queue
+      - wazuh_var_multigroups:/var/ossec/var/multigroups
+      - wazuh_integrations:/var/ossec/integrations
+      - wazuh_active_response:/var/ossec/active-response/bin
+      - wazuh_agentless:/var/ossec/agentless
+      - wazuh_wodles:/var/ossec/wodles
+      - filebeat_etc:/etc/filebeat
+      - filebeat_var:/var/lib/filebeat
+      - ./config/certs/root-ca.pem:/etc/ssl/root-ca.pem
+      - ./config/certs/wazuh.manager.pem:/etc/ssl/filebeat.pem
+      - ./config/certs/wazuh.manager-key.pem:/etc/ssl/filebeat.key
+      # Custom SentinelOps decoders/rules can be mounted here:
+      - ./config/wazuh/local_rules.xml:/var/ossec/etc/rules/local_rules.xml
+
+  wazuh.indexer:
+    image: wazuh/wazuh-indexer:4.9.0
+    hostname: wazuh.indexer
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g   # keep memory modest for a laptop
+      - "bootstrap.memory_lock=true"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - wazuh_indexer_data:/var/lib/wazuh-indexer
+      - ./config/certs/root-ca.pem:/usr/share/wazuh-indexer/certs/root-ca.pem
+      - ./config/certs/wazuh.indexer.pem:/usr/share/wazuh-indexer/certs/wazuh.indexer.pem
+      - ./config/certs/wazuh.indexer-key.pem:/usr/share/wazuh-indexer/certs/wazuh.indexer-key.pem
+      - ./config/certs/admin.pem:/usr/share/wazuh-indexer/certs/admin.pem
+      - ./config/certs/admin-key.pem:/usr/share/wazuh-indexer/certs/admin-key.pem
+      - ./config/wazuh/wazuh.indexer.yml:/usr/share/wazuh-indexer/opensearch.yml
+
+  wazuh.dashboard:
+    image: wazuh/wazuh-dashboard:4.9.0
+    hostname: wazuh.dashboard
+    restart: always
+    ports:
+      - "443:5601"
+    environment:
+      - INDEXER_USERNAME=admin
+      - INDEXER_PASSWORD=${INDEXER_PASSWORD}
+      - WAZUH_API_URL=https://wazuh.manager
+      - DASHBOARD_USERNAME=${DASHBOARD_USERNAME}
+      - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
+      - API_USERNAME=wazuh-wui
+      - API_PASSWORD=${API_PASSWORD}
+    depends_on:
+      - wazuh.indexer
+    volumes:
+      - ./config/certs/root-ca.pem:/usr/share/wazuh-dashboard/certs/root-ca.pem
+      - ./config/certs/wazuh.dashboard.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard.pem
+      - ./config/certs/wazuh.dashboard-key.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard-key.pem
+
+volumes:
+  wazuh_api_configuration:
+  wazuh_etc:
+  wazuh_logs:
+  wazuh_queue:
+  wazuh_var_multigroups:
+  wazuh_integrations:
+  wazuh_active_response:
+  wazuh_agentless:
+  wazuh_wodles:
+  filebeat_etc:
+  filebeat_var:
+  wazuh_indexer_data:

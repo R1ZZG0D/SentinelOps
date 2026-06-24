@@ -1,0 +1,20 @@
+{
+  "rule": {
+    "id": "100101",
+    "level": 14,
+    "description": "Successful SSH login after brute-force burst — possible account compromise",
+    "mitre": ["T1110.001 Password Guessing", "T1110 Brute Force"]
+  },
+  "@timestamp": "2026-06-24T14:03:45Z",
+  "source": { "ip": "203.0.113.7" },
+  "host": { "name": "web01", "os": "linux" },
+  "user": { "name": "root" },
+  "related_events": [
+    { "@timestamp": "2026-06-24T14:03:11Z", "event": { "action": "logon_failed", "outcome": "failure" }, "user": { "name": "root" } },
+    { "@timestamp": "2026-06-24T14:03:15Z", "event": { "action": "logon_failed", "outcome": "failure" }, "user": { "name": "admin" } },
+    { "@timestamp": "2026-06-24T14:03:21Z", "event": { "action": "logon_failed", "outcome": "failure" }, "user": { "name": "oracle" } },
+    { "@timestamp": "2026-06-24T14:03:27Z", "event": { "action": "logon_failed", "outcome": "failure" }, "user": { "name": "postgres" } },
+    { "@timestamp": "2026-06-24T14:03:30Z", "event": { "action": "logon_failed", "outcome": "failure" }, "user": { "name": "root" } },
+    { "@timestamp": "2026-06-24T14:03:45Z", "event": { "action": "logon", "outcome": "success" }, "user": { "name": "root" } }
+  ]
+}

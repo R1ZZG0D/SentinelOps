@@ -1,0 +1,17 @@
+{
+  "rule": {
+    "id": "947faebb-fb9f-457c-b58f-f377a6ec305a",
+    "level": 13,
+    "description": "Possible C2 beaconing to uncommon port",
+    "mitre": ["T1071 Application Layer Protocol", "T1571 Non-Standard Port"]
+  },
+  "@timestamp": "2026-06-24T14:35:00Z",
+  "source": { "ip": "10.0.0.5" },
+  "destination": { "ip": "203.0.113.7", "port": 4444 },
+  "host": { "name": "web01", "os": "linux" },
+  "related_events": [
+    { "@timestamp": "2026-06-24T14:25:00Z", "destination": { "ip": "203.0.113.7", "port": 4444 }, "extra": { "orig_bytes": 120, "resp_bytes": 300 } },
+    { "@timestamp": "2026-06-24T14:26:00Z", "destination": { "ip": "203.0.113.7", "port": 4444 }, "extra": { "orig_bytes": 120, "resp_bytes": 300 } },
+    { "@timestamp": "2026-06-24T14:27:00Z", "destination": { "ip": "203.0.113.7", "port": 4444 }, "extra": { "orig_bytes": 120, "resp_bytes": 300 } }
+  ]
+}

@@ -1,0 +1,81 @@
+name: detections-ci
+
+# Detection-as-code pipeline: every change to a parser or detection rule is
+# validated automatically, and merges to main "deploy" the validated content.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  parser-tests:
+    name: Parser unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test deps
+        run: pip install pytest
+      - name: Run parser tests
+        run: python -m pytest ingestion/tests -q
+
+  validate-detections:
+    name: Validate Sigma detections
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install sigma-cli
+        run: pip install sigma-cli
+      - name: Lint + schema-validate all rules (strict)
+        # -i  : fail the build on ANY validation issue
+        # -x attacktag : exclude the one validator whose bundled ATT&CK tactic
+        #               dataset is non-standard in pySigma 3.0.2 (see detections/README.md)
+        run: sigma check detections/sigma -i -x attacktag
+
+  convert-detections:
+    name: Convert rules to backend (preview)
+    runs-on: ubuntu-latest
+    needs: validate-detections
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install sigma-cli + OpenSearch backend
+        run: pip install sigma-cli pysigma-backend-opensearch
+      - name: Convert non-correlation rules (informational)
+        # Correlation rules require backend correlation support; this previews the
+        # atomic detections converting to the SIEM's query language.
+        continue-on-error: true
+        run: |
+          sigma convert -t opensearch \
+            detections/sigma/windows/win_service_install.yml \
+            detections/sigma/windows/win_new_admin_account.yml \
+            detections/sigma/linux/lnx_sudo_remote_payload.yml || true
+
+  deploy-detections:
+    name: Deploy detections to SIEM
+    runs-on: ubuntu-latest
+    needs: [parser-tests, validate-detections]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy validated rules to Wazuh
+        # In a live environment this step authenticates to the Wazuh REST API
+        # (secrets.WAZUH_API_*) and PUTs the validated ruleset, then restarts the
+        # manager. Kept as an auditable stub here — no manager is reachable from CI.
+        run: |
+          echo "Deploying validated detection content to the SIEM..."
+          echo "  target:   ${WAZUH_API_URL:-https://wazuh.manager:55000}"
+          echo "  rules:    $(find detections/sigma -name '*.yml' | wc -l | tr -d ' ') files validated and ready"
+          echo "  strategy: PUT ruleset -> reload decoders/rules -> restart manager"
+          echo "Deploy complete (stub). Wire WAZUH_API_USER/WAZUH_API_PASSWORD secrets to enable."
+        env:
+          WAZUH_API_URL: ${{ secrets.WAZUH_API_URL }}

@@ -1,0 +1,12 @@
+# Windows Security Event Log, flattened to key=value by a log shipper.
+2026-06-24T13:59:02Z host=WIN-DC01 EventID=4624 TargetUserName=jsmith IpAddress=10.0.0.21 LogonType=2 Status=0x0
+2026-06-24T14:03:11Z host=WIN-DC01 EventID=4625 TargetUserName=administrator IpAddress=203.0.113.7 LogonType=3 Status=0xC000006A
+2026-06-24T14:03:14Z host=WIN-DC01 EventID=4625 TargetUserName=administrator IpAddress=203.0.113.7 LogonType=3 Status=0xC000006A
+2026-06-24T14:03:19Z host=WIN-DC01 EventID=4625 TargetUserName=admin IpAddress=203.0.113.7 LogonType=3 Status=0xC000006A
+2026-06-24T14:03:25Z host=WIN-DC01 EventID=4625 TargetUserName=svc_backup IpAddress=203.0.113.7 LogonType=3 Status=0xC000006A
+2026-06-24T14:04:02Z host=WIN-DC01 EventID=4624 TargetUserName=administrator IpAddress=203.0.113.7 LogonType=3 Status=0x0
+2026-06-24T14:05:40Z host=WIN-DC01 EventID=4688 SubjectUserName=administrator NewProcessName=C:\Windows\System32\cmd.exe
+2026-06-24T14:06:10Z host=WIN-DC01 EventID=4688 SubjectUserName=administrator NewProcessName=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+2026-06-24T14:07:55Z host=WIN-DC01 EventID=4720 TargetUserName=svc_helpdesk SubjectUserName=administrator
+2026-06-24T14:08:30Z host=WIN-DC01 EventID=4728 TargetUserName=svc_helpdesk SubjectUserName=administrator
+2026-06-24T14:09:12Z host=WIN-DC01 EventID=7045 SubjectUserName=administrator ServiceName=UpdateSvc

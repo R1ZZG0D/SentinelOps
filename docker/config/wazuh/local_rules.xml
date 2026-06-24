@@ -1,0 +1,44 @@
+<!--
+  SentinelOps custom Wazuh rules.
+  These are hand-tuned local rules layered on top of Wazuh's ruleset. They are the
+  Wazuh-native expression of detections that also exist as portable Sigma rules in
+  ../detections/sigma/ — kept in sync by the detection-as-code pipeline.
+
+  Rule IDs 100000+ are the user-reserved range.
+-->
+<group name="sentinelops,local,">
+
+  <!-- SSH brute force: many auth failures from one source, then a success. -->
+  <rule id="100100" level="12" frequency="8" timeframe="120">
+    <if_matched_sid>5710</if_matched_sid>            <!-- sshd: failed login -->
+    <same_source_ip />
+    <description>SentinelOps: SSH brute-force burst from same source IP (T1110.001)</description>
+    <mitre>
+      <id>T1110.001</id>
+    </mitre>
+    <group>authentication_failures,attack,</group>
+  </rule>
+
+  <rule id="100101" level="14">
+    <if_matched_sid>100100</if_matched_sid>
+    <if_sid>5715</if_sid>                              <!-- sshd: successful login -->
+    <same_source_ip />
+    <description>SentinelOps: Successful SSH login after brute-force burst — possible account compromise (T1110)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_success,attack,</group>
+  </rule>
+
+  <!-- Linux: new service / persistence via systemd unit creation. -->
+  <rule id="100110" level="10">
+    <if_sid>2902</if_sid>                              <!-- new file in monitored dir -->
+    <field name="file">/etc/systemd/system/.+\.service</field>
+    <description>SentinelOps: New systemd service unit created — possible persistence (T1543.002)</description>
+    <mitre>
+      <id>T1543.002</id>
+    </mitre>
+    <group>persistence,attack,</group>
+  </rule>
+
+</group>

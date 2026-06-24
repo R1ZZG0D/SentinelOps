@@ -1,0 +1,41 @@
+title: Sudo Execution Downloading or Running a Remote Payload
+id: cbd406dd-2d0a-46df-a96b-a3f5c5d58eef
+status: experimental
+description: >
+    Detects privileged (sudo) execution of a download utility or shell pointed at
+    a remote/temp payload — a common post-exploitation pattern (ingress tool
+    transfer + execution) following an SSH compromise.
+references:
+    - https://attack.mitre.org/techniques/T1059/004/
+    - https://attack.mitre.org/techniques/T1105/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.execution
+    - attack.t1059.004
+    - attack.command_and_control
+    - attack.t1105
+logsource:
+    product: linux
+    service: sudo
+detection:
+    selection_download:
+        event.action: 'sudo_command'
+        extra.command|contains:
+            - 'wget http'
+            - 'curl http'
+    selection_exec_tmp:
+        event.action: 'sudo_command'
+        extra.command|contains:
+            - 'bash /tmp/'
+            - 'sh /tmp/'
+            - 'bash /dev/shm/'
+    condition: selection_download or selection_exec_tmp
+fields:
+    - host.name
+    - user.name
+    - extra.command
+falsepositives:
+    - Admins fetching install scripts from trusted internal mirrors
+    - Configuration management running bootstrap scripts from /tmp
+level: high

@@ -1,0 +1,52 @@
+title: Failed SSH Password Authentication
+id: 2fa5db01-bef9-4f85-bebe-860181c9def6
+name: lnx_ssh_failed_login
+status: experimental
+description: Base event — a single failed SSH password authentication.
+references:
+    - https://attack.mitre.org/techniques/T1110/001/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.credential_access
+    - attack.t1110.001
+logsource:
+    product: linux
+    service: sshd
+detection:
+    selection:
+        event.action: 'logon_failed'
+        network.transport: 'ssh'
+    condition: selection
+fields:
+    - source.ip
+    - user.name
+    - host.name
+falsepositives:
+    - Vulnerability scanners authenticating with rotating credentials
+    - Misconfigured automation or expired service-account passwords
+level: informational
+---
+title: SSH Brute Force From Single Source
+id: b3545dfa-acd9-46f7-879c-ca43752d7502
+status: experimental
+description: >
+    Detects 9+ failed SSH password authentications from one source IP within two
+    minutes, indicative of a credential brute-force or password-spray attempt.
+references:
+    - https://attack.mitre.org/techniques/T1110/001/
+author: Harsh Gupta (SentinelOps)
+date: 2026-06-24
+tags:
+    - attack.credential_access
+    - attack.t1110.001
+correlation:
+    type: event_count
+    rules:
+        - lnx_ssh_failed_login
+    group-by:
+        - source.ip
+    timespan: 2m
+    condition:
+        gte: 9
+level: high

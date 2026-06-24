@@ -1,0 +1,2 @@
+# Online mode only. Offline mode (the default without an API key) is pure stdlib.
+anthropic>=0.50

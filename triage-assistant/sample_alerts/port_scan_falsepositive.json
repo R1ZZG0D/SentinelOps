@@ -1,0 +1,17 @@
+{
+  "rule": {
+    "id": "1c792d0f-49dd-4fa1-9531-a4c91e333c5c",
+    "level": 6,
+    "description": "Horizontal port scan from single host",
+    "mitre": ["T1046 Network Service Discovery"]
+  },
+  "@timestamp": "2026-06-24T03:00:00Z",
+  "source": { "ip": "10.0.0.30" },
+  "host": { "name": "10.0.0.5", "os": "linux" },
+  "note": "Source 10.0.0.30 is the internal vulnerability scanner — included to exercise false-positive triage.",
+  "related_events": [
+    { "@timestamp": "2026-06-24T03:00:00Z", "destination": { "port": 22 }, "extra": { "conn_state": "S0" } },
+    { "@timestamp": "2026-06-24T03:00:01Z", "destination": { "port": 80 }, "extra": { "conn_state": "S0" } },
+    { "@timestamp": "2026-06-24T03:00:02Z", "destination": { "port": 443 }, "extra": { "conn_state": "S0" } }
+  ]
+}
