@@ -1,0 +1,4 @@
+NAME                            IMAGE                         COMMAND                  SERVICE           CREATED          STATUS              PORTS
+sentinelops-wazuh.dashboard-1   wazuh/wazuh-dashboard:4.9.0   "/entrypoint.sh"         wazuh.dashboard   11 minutes ago   Up 10 minutes       0.0.0.0:443->5601/tcp, [::]:443->5601/tcp
+sentinelops-wazuh.indexer-1     wazuh/wazuh-indexer:4.9.0     "/entrypoint.sh open…"   wazuh.indexer     11 minutes ago   Up About a minute   0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp
+sentinelops-wazuh.manager-1     wazuh/wazuh-manager:4.9.0     "/init"                  wazuh.manager     11 minutes ago   Up 11 minutes       0.0.0.0:1514-1515->1514-1515/tcp, [::]:1514-1515->1514-1515/tcp, 0.0.0.0:514->514/udp, [::]:514->514/udp, 0.0.0.0:55000->55000/tcp, [::]:55000->55000/tcp
