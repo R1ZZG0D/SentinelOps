@@ -32,8 +32,18 @@ docker compose up -d          # start the 3 services (slow first boot under emul
 ```
 
 Open the dashboard at **https://localhost:443** (self-signed cert warning is expected).
-Log into the indexer with `admin` / its image-default password, or change it and
-align `INDEXER_PASSWORD` in `.env`.
+Log in as `admin` with the `INDEXER_PASSWORD` you set in `.env`. The bring-up wires
+your `.env` credentials into the stack: `INDEXER_PASSWORD`/`DASHBOARD_PASSWORD` are
+hashed into the indexer's `internal_users.yml` (admin / kibanaserver) and loaded by
+`securityadmin`, and the manager's REST API users are rotated off their image
+defaults — `API_PASSWORD` for `wazuh-wui` (the dashboard's account) and
+`API_ADMIN_PASSWORD` for the `wazuh` admin user. The API password sync is idempotent:
+it authenticates with the configured admin password first, falling back to the image
+default, so re-running `./bringup.sh` after rotation still works.
+
+The step-by-step path above skips the credential wiring — prefer `./bringup.sh`, which
+does it in order. If you run the steps by hand, replicate the `securityadmin` and
+`wazuh-wui` password calls from `bringup.sh`.
 
 > **Apple Silicon note:** these are `linux/amd64` images, so they run under emulation
 > on arm64 Macs — functional but slow to boot (give the indexer a few minutes).
