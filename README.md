@@ -120,7 +120,7 @@ A line-by-line mapping to the target role is in [`docs/role-mapping.md`](docs/ro
 - [x] AI triage assistant (online + offline modes)
 - [x] IR runbooks
 - [x] Live Wazuh stack brought up via `docker compose` *(see Evidence)*
-- [ ] Dashboard PNGs *(GUI capture — see `assets/README.md`)*
+- [x] Dashboard PNGs *(Threat Hunting + MITRE ATT&CK views — see `assets/evidence/`)*
 
 ---
 
@@ -136,8 +136,17 @@ cp .env.example .env && ./generate-certs.sh && docker compose up -d
 
 `capture-evidence.sh` authenticates to the Wazuh API, confirms the custom rules are
 loaded, injects an SSH brute-force burst, and queries the indexer for the resulting
-alerts. For the dashboard PNGs, open **https://localhost:443** and capture the
-Security-events and MITRE ATT&CK views (`assets/README.md` lists the shots to grab).
+alerts. Captured proof lives in [`assets/evidence/`](assets/evidence/):
+
+| File | Shows |
+|------|-------|
+| `01-containers.txt` | All three services healthy |
+| `02-wazuh-api.json` | API auth + custom rules `100100`/`100101` loaded |
+| `03-indexer-alerts.json` | The two detections indexed (level 12 / 14, T1110) |
+| `04-dashboard-home.png` | Wazuh dashboard — last-24h alert severity summary |
+| `05-discover-alerts.png` | Discover filtered to the SentinelOps rule IDs |
+| `06-mitre-attack.png` | MITRE ATT&CK view — Credential Access / Brute Force |
+| `07-threat-hunting.png` | Threat Hunting — 4 level-12+ alerts, MITRE breakdown |
 
 ---
 

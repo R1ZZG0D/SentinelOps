@@ -1,14 +1,18 @@
 # Assets
 
-Drop screenshots here and reference them from the top-level `README.md` once you've
-run the live Wazuh stack locally. Recommended captures for the portfolio:
+Captured evidence from running the live Wazuh stack lives in [`evidence/`](evidence/).
+It is produced by `docker/capture-evidence.sh` (terminal/API/indexer artifacts) plus
+headless-browser screenshots of the dashboard at `https://localhost:443`:
 
-1. **Wazuh dashboard** — overview with alerts flowing in.
-2. **A detection firing** — the MITRE ATT&CK view after running an Atomic Red Team
-   test, showing the technique mapped.
-3. **The triage assistant output** — a terminal capture of an LLM-authored
-   investigation report.
-4. **The CI pipeline green** — the GitHub Actions run validating Sigma + parser tests.
+| File | Capture |
+|------|---------|
+| `01-containers.txt` | `docker compose ps` — all three services up |
+| `02-wazuh-api.json` | Wazuh API auth + custom rules `100100`/`100101` loaded |
+| `03-indexer-alerts.json` | The two detections indexed (level 12 / 14, MITRE T1110) |
+| `04-dashboard-home.png` | Dashboard overview — last-24h alert severity summary |
+| `05-discover-alerts.png` | Discover filtered to the SentinelOps rule IDs |
+| `06-mitre-attack.png` | MITRE ATT&CK module — Credential Access / Brute Force |
+| `07-threat-hunting.png` | Threat Hunting module — 4 level-12+ alerts, MITRE breakdown |
 
-Suggested filenames: `dashboard.png`, `detection-firing.png`, `triage-report.png`,
-`ci-green.png`.
+To regenerate: bring the stack up (`docker/bringup.sh`), run `docker/capture-evidence.sh`,
+then open the dashboard and capture the Threat Hunting and MITRE ATT&CK views.
