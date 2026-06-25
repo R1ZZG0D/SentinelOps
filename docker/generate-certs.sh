@@ -8,9 +8,12 @@ cd "$(dirname "$0")"
 mkdir -p config/certs
 
 echo "[*] Generating Wazuh certificates via the official wazuh-certs-generator image..."
+# config/certs.yml (the node layout) lives outside config/certs/ on purpose: that
+# directory is gitignored for the generated key material, but the input config is
+# not a secret and must be tracked so a fresh clone can regenerate certs.
 docker run --rm \
   -v "$(pwd)/config/certs:/certificates" \
-  -v "$(pwd)/config/certs/config.yml:/config/certs.yml:ro" \
+  -v "$(pwd)/config/certs.yml:/config/certs.yml:ro" \
   wazuh/wazuh-certs-generator:0.0.2 || {
     cat <<'EOF'
 [!] If the image pull failed, you can generate certs manually with the official tarball:
