@@ -8,6 +8,13 @@ node.max_local_storage_nodes: "3"
 path.data: /var/lib/wazuh-indexer
 path.logs: /var/log/wazuh-indexer
 
+# Report Elasticsearch-7.10.2 in the main response so ES7 clients (the manager's
+# Filebeat) negotiate the modern bulk API. Without this, OpenSearch advertises
+# "2.13.0", Filebeat falls back to the legacy mapping-type bulk format and every
+# alert insert fails with 400 "unknown parameter [_type]" — so no wazuh-alerts
+# index is ever created. This is the documented Wazuh indexer default.
+compatibility.override_main_response_version: true
+
 plugins.security.ssl.http.pemcert_filepath: /usr/share/wazuh-indexer/certs/wazuh.indexer.pem
 plugins.security.ssl.http.pemkey_filepath: /usr/share/wazuh-indexer/certs/wazuh.indexer-key.pem
 plugins.security.ssl.http.pemtrustedcas_filepath: /usr/share/wazuh-indexer/certs/root-ca.pem
